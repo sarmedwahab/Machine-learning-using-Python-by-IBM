@@ -1,0 +1,107 @@
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import pylab as pl
+%matplotlib inline
+
+
+# Reading Data
+
+df = pd.read_csv("FuelConsumptionCo2.csv")
+df.head(3)
+                 
+
+# Data Exploration
+
+df.describe()  # shows summary of data
+
+# selecting specific features
+cdf = df[['ENGINESIZE','FUELCONSUMPTION_COMB','CYLINDERS','CO2EMISSIONS']]
+cdf.head(4)
+
+
+# Visualizations 
+
+
+#Plotting features on histogram
+
+cdf.hist()
+plt.show()
+
+
+#if we want to change the plot positions, then variable's position should be changed.
+cdf_1 = df[['CYLINDERS','ENGINESIZE','CO2EMISSIONS','FUELCONSUMPTION_COMB']]
+
+cdf_1.hist() ; plt.show()
+
+# Checking the Relationship between different variables.
+# Here comes use of matplotlib library.
+
+# I want to use "for loop" here to pick the variables name by itself and make scatter plots by itself for all of them.
+
+plt.scatter(cdf.ENGINESIZE , cdf.CO2EMISSIONS, color='blue');
+plt.xlabel("Engines") ; plt.ylabel("CO2 Emissions") ; plt.show();
+
+
+plt.scatter(cdf.CYLINDERS , cdf.CO2EMISSIONS, color='blue')
+plt.xlabel("Engines") ; plt.ylabel("CO2 Emissions") ; plt.show();
+
+plt.scatter(cdf.FUELCONSUMPTION_COMB , cdf.CO2EMISSIONS, color='blue')
+plt.xlabel("Engines") ; plt.ylabel("CO2 Emissions") ; plt.show();
+
+# Splitting Data into Train/Test
+
+#### To select randoms rows, use np.random.rand()
+this is the usage of nump to divide data.
+
+# msk means mask for data
+msk = np.random.rand(len(df)) < 0.8
+train = cdf[msk]
+test = cdf[~msk]
+train_test_ratio = len(train) , len(test)
+train_test_ratio
+
+train
+
+#### Train Data Distribution
+
+
+plt.scatter(train.ENGINESIZE, train.CO2EMISSIONS , color = 'blue')
+plt.xlabel("Engine size") ; plt.ylabel("Emissions");
+plt.show()
+
+#### Modeling
+Using sklearn package to model data.
+
+from sklearn import linear_model
+regr = linear_model.LinearRegression()
+train_x = np.asanyarray(train[['ENGINESIZE']])        # train[['variable']] fetches the data.
+train_y = np.asanyarray(train[['CO2EMISSIONS']])
+regr.fit(train_x,train_y)
+
+# Regression Coefficients
+print('Coefficients:' , regr.coef_ ,' Intercept: ',regr.intercept_)
+
+
+# Plotting Outputs
+plt.scatter(train.ENGINESIZE, train.CO2EMISSIONS , color='blue')
+plt.plot(train_x, regr.coef_[0][0]*train_x + regr.intercept_, '-r')
+plt.xlabel("Engine size") ; plt.ylabel("Emissions");
+plt.show()
+
+
+from sklearn.metrics import r2_score
+test_x = np.asanyarray(test[['ENGINESIZE']])
+test_y = np.asanyarray(test[['CO2EMISSIONS']])
+test_y_predicted = regr.predict(test_x)
+
+
+mean_abs_error = np.mean(np.absolute(test_y - test_y_predicted ))
+print("Mean absolute error : ", mean_abs_error)
+print("Residual sum of square: %.2f" % np.mean((test_y - test_y_predicted) **2) )
+print("R2 Score: %.2f" % r2_score(test_y , test_y_predicted))
+
+
+
+
+
