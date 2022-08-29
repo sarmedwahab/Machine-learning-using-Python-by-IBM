@@ -37,7 +37,6 @@ cdf_1.hist() ; plt.show()
 # Checking the Relationship between different variables.
 # Here comes use of matplotlib library.
 
-# I want to use "for loop" here to pick the variables name by itself and make scatter plots by itself for all of them.
 
 plt.scatter(cdf.ENGINESIZE , cdf.CO2EMISSIONS, color='blue');
 plt.xlabel("Engines") ; plt.ylabel("CO2 Emissions") ; plt.show();
